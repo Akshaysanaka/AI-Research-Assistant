@@ -1,0 +1,17 @@
+export type ChatMessage = { role: 'user' | 'assistant' | 'system'; content: string };
+
+export async function sendChat(messages: ChatMessage[], data?: unknown): Promise<string> {
+  const res = await fetch('/api/ai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, data }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `Request failed with ${res.status}`);
+  }
+  const json = await res.json();
+  return json.message as string;
+}
+
+
