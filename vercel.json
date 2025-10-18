@@ -15,14 +15,14 @@
       "root": "Backend"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(ai|auth|profile|dashboard|search|collaborators|opportunities|health)",
-      "dest": "/Backend/server.js"
+      "source": "/(ai|auth|profile|dashboard|search|collaborators|opportunities|health)",
+      "destination": "/Backend/server.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/Frontend/$1"
+      "source": "/(.*)",
+      "destination": "/Frontend/$1"
     }
   ],
 
