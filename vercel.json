@@ -15,7 +15,7 @@
   ],
   "routes": [
     {
-      "src": "/(ai|auth|profile|dashboard|search|collaborators|opportunities|health)",
+      "src": "/api/(ai|auth|profile|dashboard|search|collaborators|opportunities|health)",
       "dest": "/Backend/server.js"
     },
     {
