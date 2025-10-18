@@ -5,14 +5,12 @@
       "src": "Frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
-      },
-      "root": "Frontend"
+        "distDir": "Frontend/dist"
+      }
     },
     {
       "src": "Backend/server.js",
-      "use": "@vercel/node",
-      "root": "Backend"
+      "use": "@vercel/node"
     }
   ],
   "rewrites": [
@@ -22,7 +20,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/Frontend/$1"
+      "destination": "/$1"
     }
   ],
 
