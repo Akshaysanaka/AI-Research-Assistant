@@ -60,18 +60,19 @@ app.post('/api/ai', async (req, res) => {
 				const { GoogleGenerativeAI } = require('@google/generative-ai');
 				const genAI = new GoogleGenerativeAI(googleKey);
 
+				const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
 				const systemPreamble = `You are an AI research assistant for a research collaboration platform. You have access to user profiles, collaborators, grants, and research data. Be helpful, concise, and actionable. When asked questions, provide direct answers based on the available data. If no data is provided, give general research advice. Always be professional and encouraging for researchers.`;
 
-				const model = genAI.getGenerativeModel({
-					model: 'gemini-1.5-flash',
-					systemInstruction: systemPreamble
-				});
-
-				// Convert messages to Gemini format
-				const history = messages.slice(0, -1).map(msg => ({
-					role: msg.role === 'assistant' ? 'model' : 'user',
-					parts: [{ text: msg.content }]
-				}));
+				// Convert messages to Gemini format with system message first
+				const history = [
+					{ role: 'user', parts: [{ text: systemPreamble }] },
+					{ role: 'model', parts: [{ text: 'I understand. I am a research assistant AI that helps with collaboration platforms, profiles, grants, and research data. I will be helpful, concise, and professional.' }] },
+					...messages.slice(0, -1).map(msg => ({
+						role: msg.role === 'assistant' ? 'model' : 'user',
+						parts: [{ text: msg.content }]
+					}))
+				];
 
 				const lastMessage = messages[messages.length - 1];
 				const prompt = lastMessage.content + (data ? `\n\nHere is additional JSON data to consider:\n${JSON.stringify(data).slice(0, 6000)}` : '');
