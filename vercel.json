@@ -6,11 +6,13 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
-      }
+      },
+      "root": "Frontend"
     },
     {
       "src": "Backend/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "root": "Backend"
     }
   ],
   "routes": [
