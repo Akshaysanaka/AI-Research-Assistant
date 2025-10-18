@@ -59,9 +59,13 @@ app.post('/api/ai', async (req, res) => {
 				// Lazy load to avoid requiring the dep if not installed
 				const { GoogleGenerativeAI } = require('@google/generative-ai');
 				const genAI = new GoogleGenerativeAI(googleKey);
-				const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 				const systemPreamble = `You are an AI research assistant for a research collaboration platform. You have access to user profiles, collaborators, grants, and research data. Be helpful, concise, and actionable. When asked questions, provide direct answers based on the available data. If no data is provided, give general research advice. Always be professional and encouraging for researchers.`;
+
+				const model = genAI.getGenerativeModel({
+					model: 'gemini-1.5-flash',
+					systemInstruction: systemPreamble
+				});
 
 				// Convert messages to Gemini format
 				const history = messages.slice(0, -1).map(msg => ({
@@ -73,8 +77,7 @@ app.post('/api/ai', async (req, res) => {
 				const prompt = lastMessage.content + (data ? `\n\nHere is additional JSON data to consider:\n${JSON.stringify(data).slice(0, 6000)}` : '');
 
 				const chat = model.startChat({
-					history,
-					systemInstruction: systemPreamble
+					history
 				});
 
 				const result = await chat.sendMessage(prompt);
