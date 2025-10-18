@@ -27,6 +27,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '2mb' }));
 
+app.get('/', (req, res) => {
+	res.json({ message: 'Backend API is running. Visit /health for status or /api/* for endpoints.' });
+});
+
 app.get('/health', (req, res) => {
 	res.json({ status: 'ok', service: 'backend', time: new Date().toISOString() });
 });

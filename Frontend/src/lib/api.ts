@@ -1,7 +1,7 @@
 export type ChatMessage = { role: 'user' | 'assistant' | 'system'; content: string };
 
 export async function sendChat(messages: ChatMessage[], data?: unknown): Promise<string> {
-  const apiUrl = '/api';  // Changed from localhost for Vercel deployment
+  const apiUrl = '/api';  // API prefix for Vercel deployment
   const res = await fetch(`${apiUrl}/ai`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
