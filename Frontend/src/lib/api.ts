@@ -1,7 +1,7 @@
 export type ChatMessage = { role: 'user' | 'assistant' | 'system'; content: string };
 
 export async function sendChat(messages: ChatMessage[], data?: unknown): Promise<string> {
-  const apiUrl = '/api';  // API prefix for Vercel deployment
+  const apiUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';  // Use environment variable for backend URL
   const res = await fetch(`${apiUrl}/ai`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
