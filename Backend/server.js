@@ -21,7 +21,7 @@ if (process.env.MONGO_URI) {
 }
 
 app.use(cors({
-	origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || ['http://localhost:5173', 'http://localhost:3000', 'https://your-render-frontend-url.onrender.com'],
+	origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || ['http://localhost:5173', 'http://localhost:3000', 'https://ai-research-assistant-frontend.onrender.com'],
 	methods: ['GET', 'POST', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization'],
 }));
