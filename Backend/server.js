@@ -51,31 +51,38 @@ app.post('/api/ai', async (req, res) => {
 			return res.status(400).json({ error: 'messages must be a non-empty array' });
 		}
 
-		const openaiKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY;
-		const useOpenAI = Boolean(openaiKey);
+		const googleKey = process.env.GOOGLE_API_KEY;
+		const useGoogle = Boolean(googleKey);
 
-		if (useOpenAI) {
+		if (useGoogle) {
 			try {
 				// Lazy load to avoid requiring the dep if not installed
-				const OpenAI = require('openai');
-				const client = new OpenAI({ apiKey: openaiKey });
+				const { GoogleGenerativeAI } = require('@google/generative-ai');
+				const genAI = new GoogleGenerativeAI(googleKey);
+				const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-				const systemPreamble = {
-					role: 'system',
-					content: `You are an AI research assistant for a research collaboration platform. You have access to user profiles, collaborators, grants, and research data. Be helpful, concise, and actionable. When asked questions, provide direct answers based on the available data. If no data is provided, give general research advice. Always be professional and encouraging for researchers.`
-				};
+				const systemPreamble = `You are an AI research assistant for a research collaboration platform. You have access to user profiles, collaborators, grants, and research data. Be helpful, concise, and actionable. When asked questions, provide direct answers based on the available data. If no data is provided, give general research advice. Always be professional and encouraging for researchers.`;
 
-				const response = await client.chat.completions.create({
-					model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-					messages: [systemPreamble, ...messages, ...(data ? [{ role: 'user', content: `Here is additional JSON data to consider:\n${JSON.stringify(data).slice(0, 6000)}` }] : [])],
-					temperature: 0.3,
+				// Convert messages to Gemini format
+				const history = messages.slice(0, -1).map(msg => ({
+					role: msg.role === 'assistant' ? 'model' : 'user',
+					parts: [{ text: msg.content }]
+				}));
+
+				const lastMessage = messages[messages.length - 1];
+				const prompt = lastMessage.content + (data ? `\n\nHere is additional JSON data to consider:\n${JSON.stringify(data).slice(0, 6000)}` : '');
+
+				const chat = model.startChat({
+					history,
+					systemInstruction: systemPreamble
 				});
 
-				const text = response.choices?.[0]?.message?.content || 'No response';
-				return res.json({ ok: true, provider: 'openai', message: text });
+				const result = await chat.sendMessage(prompt);
+				const text = result.response.text() || 'No response';
+				return res.json({ ok: true, provider: 'google', message: text });
 			} catch (err) {
-				// Fall through to local agent on any OpenAI error
-				console.error('OpenAI error, falling back to local agent:', err?.message || err);
+				// Fall through to local agent on any Google API error
+				console.error('Google API error, falling back to local agent:', err?.message || err);
 			}
 		}
 
